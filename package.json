@@ -1,26 +1,25 @@
 {
   "name": "cremapdf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Votre atelier PDF personnel, local et gratuit",
   "author": "CREMALAB",
   "main": "main.cjs",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win nsis --x64"
-  },
-  "dependencies": {
-    "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^5.4.0"
+    "start": "node prepare-assets.cjs && electron .",
+    "build": "node prepare-assets.cjs && electron-builder --win nsis --x64"
   },
   "devDependencies": {
     "electron": "^42.0.0",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.0"
   },
   "build": {
     "appId": "fr.cremalab.cremapdf",
     "productName": "CremaPDF",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "app": "desktop-app"
     },
     "files": [
       "main.cjs",
@@ -28,10 +27,11 @@
       "index.html",
       "app.js",
       "style.css",
-      "node_modules/**/*",
       "icon.png",
       "icon.ico",
-      "LICENSE"
+      "LICENSE",
+      "vendor/**/*",
+      "!**/node_modules{,/**/*}"
     ],
     "win": {
       "target": "nsis",
@@ -44,7 +44,10 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "CremaPDF"
+      "shortcutName": "CremaPDF",
+      "include": "installer.nsh",
+      "uninstallDisplayName": "CremaPDF — Désinstaller",
+      "deleteAppDataOnUninstall": false
     },
     "fileAssociations": [
       {
@@ -53,7 +56,12 @@
         "description": "Document PDF",
         "role": "Editor"
       }
-    ]
+    ],
+    "electronLanguages": [
+      "fr",
+      "en-US"
+    ],
+    "compression": "maximum"
   },
   "license": "MIT",
   "repository": {

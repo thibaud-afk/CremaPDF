@@ -12,3 +12,6 @@ demo.pdf
 capture.cjs
 publication-notes.md
 *.log
+vendor/
+check-update.cjs
+desktop-app/

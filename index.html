@@ -98,11 +98,12 @@ Thibaud CREMADES — Directeur général</textarea></label
         Dessinez ci-dessous ou importez une image. Vérifiez l’aperçu avant de la
         conserver.
       </p>
-      <canvas id="signpad" width="720" height="240"></canvas>
+      <div class="signature-instructions"><strong>Merci de dessiner votre signature ou de l’importer.</strong><br>À la souris : maintenez le bouton gauche enfoncé et signez dans le cadre ci-dessous.<br>Vous avez déjà une signature ? Cliquez sur « Importer ma signature » et choisissez votre image.</div>
+      <div class="pad-wrap"><canvas id="signpad" width="720" height="240"></canvas><span id="padHint">✎ Dessinez votre signature ici</span></div>
       <div class="row">
         <button id="clear">Recommencer</button
         ><label class="filebutton"
-          >Importer une image<input
+          >Importer ma signature<input
             id="import"
             type="file"
             accept="image/png,image/jpeg"
@@ -118,7 +119,9 @@ Thibaud CREMADES — Directeur général</textarea></label
         </button>
       </div>
     </dialog>
-    <script src="node_modules/pdf-lib/dist/pdf-lib.min.js"></script>
+    <div id="actionHint" hidden role="status"></div>
+    <div id="itemMenu" hidden role="menu"><button id="menuResize" role="menuitem">Redimensionner avec les poignées</button><button id="menuDuplicate" role="menuitem">Dupliquer</button><button id="menuDelete" role="menuitem">Supprimer · Suppr</button></div>
+    <script src="vendor/pdf-lib.min.js"></script>
     <script type="module" src="app.js"></script>
   </body>
 </html>

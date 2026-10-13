@@ -1,6 +1,6 @@
-import * as pdfjs from "./node_modules/pdfjs-dist/build/pdf.mjs";
+import * as pdfjs from "./vendor/pdfjs/pdf.mjs";
 pdfjs.GlobalWorkerOptions.workerSrc =
-  "./node_modules/pdfjs-dist/build/pdf.worker.mjs";
+  "./vendor/pdfjs/pdf.worker.mjs";
 const $ = (id) => document.getElementById(id),
   status = (t) => ($("status").textContent = t);
 let source,
@@ -48,7 +48,7 @@ $("skipwelcome").onchange = () =>
 const nameLabel = document.createElement("label");
 nameLabel.innerHTML =
   'Comment souhaitez-vous être appelé ?<input id="preferredname" type="text" maxlength="60" placeholder="Votre prénom">';
-$("signatureDialog").insertBefore(nameLabel, $("signpad"));
+$("signatureDialog").insertBefore(nameLabel, document.querySelector('.pad-wrap'));
 $("preferredname").value = localStorage.getItem("preferredname") || "";
 function personalize() {
   const preferred = localStorage.getItem("preferredname") || "";
@@ -120,12 +120,15 @@ function setTool(t) {
   $("area").classList.toggle("active", t === "area");
   overlay.style.pointerEvents = t === "highlight" ? "none" : "auto";
   textLayer.style.pointerEvents = t === "highlight" ? "auto" : "none";
+  $("actionHint").hidden = t !== "signature";
+  $("actionHint").textContent = "Cliquez maintenant dans le PDF à l’endroit où poser votre signature. Vous pourrez ensuite la déplacer et la redimensionner.";
+  overlay.style.cursor = t === "signature" ? "crosshair" : "default";
   status(
     t === "highlight"
       ? "Sélectionnez les mots avec la souris : le surlignage est ajouté au relâchement."
       : t === "area"
         ? "Dessinez un rectangle à surligner."
-        : "Cliquez dans la page pour ajouter un élément, ou déplacez votre sélection.",
+        : t === "signature" ? "Indiquez maintenant l’endroit où poser la signature : cliquez dans le PDF." : "Déplacez les éléments à la souris. Poignées bleues : redimensionner. Suppr : supprimer.",
   );
 }
 document.querySelectorAll("[data-tool]").forEach(
@@ -221,13 +224,17 @@ function add(item) {
   items.push({ id: crypto.randomUUID(), page, ...item });
   dirty = true;
   selected = items.at(-1).id;
+  if (["signature", "text"].includes(item.kind)) setTool("select");
   draw();
+  if (item.kind === "signature") status("Signature posée : faites-la glisser pour la déplacer, tirez un coin pour la dimensionner. Suppr ou clic droit pour supprimer.");
 }
 function draw() {
   overlay.replaceChildren();
   for (const it of items.filter((i) => i.page === page)) {
     const el = document.createElement("div");
     el.className = "item" + (selected === it.id ? " selected" : "");
+    el.dataset.id = it.id;
+    el.dataset.kind = it.kind;
     el.style.left = it.x * scale + "px";
     el.style.top = it.y * scale + "px";
     el.style.width = it.w * scale + "px";
@@ -245,7 +252,10 @@ function draw() {
       el.style.fontSize = it.size * scale + "px";
     }
     el.onpointerdown = (e) => {
-      if (tool !== "select") return;
+      if(e.button !== 0 || e.target.closest('.resize-handle')) return;
+      if (tool === "pan" || tool === "highlight" || tool === "area") return;
+      setTool("select");
+      e.preventDefault();
       e.stopPropagation();
       selected = it.id;
       const x = e.clientX,
@@ -274,7 +284,36 @@ function draw() {
         el.onpointermove = null;
         draw();
       };
+      el.onpointercancel = () => { el.onpointermove = null; draw(); };
     };
+    el.oncontextmenu = e => {
+      e.preventDefault(); e.stopPropagation(); selected = it.id; setTool('select'); draw();
+      const menu = $('itemMenu'); menu.hidden = false;
+      menu.style.left = Math.min(e.clientX, window.innerWidth - 285) + 'px';
+      menu.style.top = Math.min(e.clientY, window.innerHeight - 145) + 'px';
+    };
+    if(selected === it.id && ['signature','highlight'].includes(it.kind)) {
+      for(const corner of ['nw','ne','sw','se']) {
+        const handle = document.createElement('button'); handle.className = 'resize-handle '+corner; handle.title='Tirer pour redimensionner'; handle.setAttribute('aria-label','Redimensionner '+corner);
+        handle.onpointerdown = e => {
+          if(e.button !== 0)return; e.preventDefault(); e.stopPropagation(); setTool('select');
+          const startX=e.clientX,startY=e.clientY,original={x:it.x,y:it.y,w:it.w,h:it.h};
+          handle.setPointerCapture(e.pointerId);
+          handle.onpointermove = m => {
+            const dx=(m.clientX-startX)/scale,dy=(m.clientY-startY)/scale;
+            let w=Math.max(20,original.w+(corner.includes('e')?dx:-dx)),h=Math.max(12,original.h+(corner.includes('s')?dy:-dy));
+            if(it.kind==='signature') {const factor=Math.abs(dx/original.w)>=Math.abs(dy/original.h)?w/original.w:h/original.h; w=original.w*factor; h=original.h*factor;}
+            const anchorX=corner.includes('w')?original.x+original.w:original.x,anchorY=corner.includes('n')?original.y+original.h:original.y;
+            const maxW=corner.includes('w')?anchorX:viewport.width/scale-anchorX,maxH=corner.includes('n')?anchorY:viewport.height/scale-anchorY;
+            const fit=Math.min(1,maxW/w,maxH/h); w*=fit;h*=fit;
+            it.w=w;it.h=h;it.x=corner.includes('w')?anchorX-w:anchorX;it.y=corner.includes('n')?anchorY-h:anchorY;
+            el.style.left=it.x*scale+'px';el.style.top=it.y*scale+'px';el.style.width=w*scale+'px';el.style.height=h*scale+'px';dirty=true;
+          };
+          handle.onpointerup=handle.onpointercancel=()=>{handle.onpointermove=null;draw();};
+        };
+        el.append(handle);
+      }
+    }
     overlay.append(el);
   }
   for (const result of searchResults.filter((r) => r.page === page)) {
@@ -414,6 +453,7 @@ $("remove").onclick = () => {
     selected = null;
     dirty = true;
     draw();
+    status("Élément supprimé.");
   }
 };
 $("undo").onclick = () => {
@@ -678,6 +718,9 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
+  const editing = e.target.closest('input,textarea,select,[contenteditable="true"]');
+  if(e.key==='Escape') { $('itemMenu').hidden=true; setTool('select'); }
+  if(e.key==='Delete' && !editing && !$('signatureDialog').open && selected) {e.preventDefault(); $('remove').click();}
   if (e.ctrlKey && e.key === "f") {
     e.preventDefault();
     $("query").focus();
@@ -691,6 +734,14 @@ document.addEventListener("keydown", (e) => {
     $("open").click();
   }
 });
+$('menuDelete').onclick=()=>{$('itemMenu').hidden=true;$('remove').click();};
+$('menuResize').onclick=()=>{$('itemMenu').hidden=true;setTool('select');draw();status('Tirez une poignée bleue située dans un coin de votre signature.');};
+$('menuDuplicate').onclick=()=>{const item=items.find(i=>i.id===selected);$('itemMenu').hidden=true;if(item){const copy={...item,x:item.x+15,y:item.y+15};delete copy.id;add(copy);}};
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#itemMenu'))$('itemMenu').hidden=true;});
+$('sigwidth').oninput=()=>{const item=items.find(i=>i.id===selected&&i.kind==='signature');if(item){const ratio=item.h/item.w;item.w=Number($('sigwidth').value);item.h=item.w*ratio;dirty=true;draw();}};
+pad.addEventListener('pointerdown',()=>{$('padHint').hidden=true;});
+$('import').addEventListener('change',()=>{$('padHint').hidden=true;});
+$('clear').addEventListener('click',()=>{$('padHint').hidden=false;});
 const scroll = $("scroll");
 scroll.addEventListener(
   "pointerdown",

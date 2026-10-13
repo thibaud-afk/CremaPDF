@@ -12,7 +12,7 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 ## Installation
 
-1. Téléchargez `CremaPDF Setup 1.0.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
+1. Téléchargez `CremaPDF Setup 1.1.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
 2. Lancez l'installateur. Aucun outil de développement n'est nécessaire.
 3. Choisissez votre prénom, dessinez votre signature ou importez une image PNG/JPEG.
 4. Vérifiez l'aperçu et validez. Vous pouvez cocher **Ne plus afficher cet accueil**.
@@ -20,6 +20,10 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 Windows 10/11, processeur x64. L'installateur n'est pas signé avec un certificat
 d'éditeur ; Windows peut afficher un avertissement de réputation.
+
+## Nouveautés de la version 1.1
+
+La signature est sélectionnée dès sa pose : déplacez-la immédiatement, tirez une des quatre poignées pour la redimensionner, puis utilisez Suppr ou clic droit pour la supprimer. Le clic droit permet aussi de dupliquer un ajout. Les consignes de création et de placement sont maintenant visibles. Un raccourci « Désinstaller CremaPDF » est ajouté au menu Démarrer ; la désinstallation reste accessible dans les applications Windows.
 
 ## Ce que vous pouvez faire
 
