@@ -7,7 +7,7 @@ for(const dir of ['cmaps','standard_fonts','wasm','iccs']) fs.cpSync(path.join('
 fs.copyFileSync('node_modules/pdf-lib/LICENSE.md','vendor/pdf-lib-LICENSE.md');
 fs.copyFileSync('node_modules/pdfjs-dist/LICENSE','vendor/pdfjs-LICENSE');
 const output='desktop-app';fs.mkdirSync(output,{recursive:true});
-for(const file of ['main.cjs','preload.cjs','app.js','index.html','style.css','icon.png','icon.ico','LICENSE'])fs.copyFileSync(file,path.join(output,file));
+for(const file of ['main.cjs','updates.cjs','print-pages.mjs','print.html','print.css','print.js','preload.cjs','app.js','index.html','style.css','icon.png','icon.ico','LICENSE'])fs.copyFileSync(file,path.join(output,file));
 fs.cpSync('vendor',path.join(output,'vendor'),{recursive:true});
 const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
 fs.writeFileSync(path.join(output,'package.json'),JSON.stringify({name:pkg.name,version:pkg.version,description:pkg.description,author:pkg.author,main:pkg.main,license:pkg.license}));

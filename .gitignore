@@ -15,3 +15,5 @@ publication-notes.md
 vendor/
 check-update.cjs
 desktop-app/
+check-print.cjs
+check-updater.cjs

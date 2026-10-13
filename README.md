@@ -12,7 +12,7 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 ## Installation
 
-1. Téléchargez `CremaPDF Setup 1.1.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
+1. Téléchargez `CremaPDF Setup 1.2.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
 2. Lancez l'installateur. Aucun outil de développement n'est nécessaire.
 3. Choisissez votre prénom, dessinez votre signature ou importez une image PNG/JPEG.
 4. Vérifiez l'aperçu et validez. Vous pouvez cocher **Ne plus afficher cet accueil**.
@@ -20,6 +20,12 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 Windows 10/11, processeur x64. L'installateur n'est pas signé avec un certificat
 d'éditeur ; Windows peut afficher un avertissement de réputation.
+
+## Nouveautés de la version 1.2
+
+**Impression : Ctrl+P** ou bouton Imprimer. Le dialogue indique le nombre total de pages : tout le document, page actuelle ou plage comme `1-3, 5`. Les signatures et autres ajouts sont inclus, même avant enregistrement. Les pages sont rendues en haute résolution et ajustées au format A4. La fenêtre Windows permet de choisir l'imprimante et les copies.
+
+**Mises à jour :** bouton Mises à jour dans la barre latérale. GitHub est la source par défaut ; un dossier local ou partagé contenant les installateurs peut aussi être choisi. Activez la vérification au démarrage si vous le souhaitez. Après votre clic, le logiciel télécharge l'installateur, contrôle son empreinte SHA-256 et le lance. Les modifications non enregistrées sont signalées avant fermeture. La vérification automatique est désactivée par défaut.
 
 ## Nouveautés de la version 1.1
 

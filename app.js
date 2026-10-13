@@ -1,4 +1,5 @@
 import * as pdfjs from "./vendor/pdfjs/pdf.mjs";
+import {choosePages} from './print-pages.mjs';
 pdfjs.GlobalWorkerOptions.workerSrc =
   "./vendor/pdfjs/pdf.worker.mjs";
 const $ = (id) => document.getElementById(id),
@@ -174,6 +175,7 @@ async function open(provided) {
   $("welcome").hidden = true;
   $("paper").hidden = false;
   $("save").disabled = false;
+  $('print').disabled=false;
   await render();
   status("Document ouvert. Choisissez un outil à gauche.");
 }
@@ -527,7 +529,7 @@ $("query").onkeydown = (e) => {
 };
 $("searchprev").onclick = guard(() => goResult(-1));
 $("searchnext").onclick = guard(() => goResult(1));
-$("save").onclick = guard(async () => {
+async function buildPdf() {
   if (!source) return;
   status("Préparation de votre copie…");
   const output = await PDFLib.PDFDocument.load(source),
@@ -583,6 +585,11 @@ $("save").onclick = guard(async () => {
       }
     }
   }
+  return output;
+}
+$("save").onclick = guard(async () => {
+  if(!source)return;
+  const output=await buildPdf();
   const ok = await window.desktop.save({
     name: name.replace(/\.pdf$/i, "") + " - modifie.pdf",
     bytes: await output.save(),
@@ -718,6 +725,7 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){e.preventDefault();if(doc&&!$('signatureDialog').open)$('print').click();}
   const editing = e.target.closest('input,textarea,select,[contenteditable="true"]');
   if(e.key==='Escape') { $('itemMenu').hidden=true; setTool('select'); }
   if(e.key==='Delete' && !editing && !$('signatureDialog').open && selected) {e.preventDefault(); $('remove').click();}
@@ -781,3 +789,25 @@ guard(async () => {
     welcome.classList.add("quick");
   }
 })();
+
+function printSelection(){return choosePages($('printChoice').value,$('printRange').value,doc.numPages,page);}
+function refreshPrint(){ $('rangeLabel').hidden=$('printChoice').value!=='range';try{const pages=printSelection();$('printSummary').textContent=pages.length+' page(s) à imprimer sur '+doc.numPages+' : '+pages.join(', ');$('printConfirm').disabled=false;}catch(e){$('printSummary').textContent=e.message;$('printConfirm').disabled=true;}}
+$('print').onclick=()=>{if(!doc)return;$('printCount').textContent='Ce document contient '+doc.numPages+' page(s). Page actuelle : '+page+'.';refreshPrint();$('printDialog').showModal();};
+$('printChoice').onchange=$('printRange').oninput=refreshPrint;
+$('printCancel').onclick=()=>$('printDialog').close();
+let printing=false;
+$('printConfirm').onclick=guard(async()=>{if(printing)return;const chosen=printSelection();printing=true;$('printDialog').close();$('print').disabled=true;let prepared;
+try{const pdf=await buildPdf();prepared=await pdfjs.getDocument({data:await pdf.save(),isEvalSupported:false}).promise;const images=[];for(let i=0;i<chosen.length;i++){status('Préparation de l’impression : '+(i+1)+' / '+chosen.length+'…');const pdfPage=await prepared.getPage(chosen[i]);const view=pdfPage.getViewport({scale:2.5});const canvas=document.createElement('canvas');canvas.width=Math.ceil(view.width);canvas.height=Math.ceil(view.height);await pdfPage.render({canvasContext:canvas.getContext('2d'),viewport:view}).promise;images.push(canvas.toDataURL('image/png'));canvas.width=canvas.height=0;}const result=await window.desktop.print(images);status(result.success?'Impression transmise à Windows.':result.reason==='cancelled'?'Impression annulée.':'Impression non effectuée : '+(result.reason||'annulée ou imprimante indisponible.'));}
+finally{await prepared?.destroy();printing=false;$('print').disabled=!doc;}});
+const updateButton=document.createElement('button');updateButton.id='updates';updateButton.textContent='Mises à jour';document.querySelector('aside').append(updateButton);
+let updateInfo;
+async function refreshUpdateInfo(){updateInfo=await window.desktop.updateInfo();$('versionInfo').textContent='Version installée : '+updateInfo.version;$('folderInfo').textContent=updateInfo.folder||'Aucun dossier sélectionné.';}
+$('updateSource').value=localStorage.getItem('updateSource')||'github';$('autoUpdate').checked=localStorage.getItem('autoUpdate')==='yes';
+function refreshUpdateSource(){const folder=$('updateSource').value==='folder';$('updateFolder').hidden=!folder;$('folderInfo').hidden=!folder;$('updateInstall').disabled=true;localStorage.setItem('updateSource',$('updateSource').value);}
+refreshUpdateSource();$('updateSource').onchange=refreshUpdateSource;$('autoUpdate').onchange=()=>localStorage.setItem('autoUpdate',$('autoUpdate').checked?'yes':'no');
+updateButton.onclick=guard(async()=>{await refreshUpdateInfo();$('updateDialog').showModal();});$('updateClose').onclick=()=>$('updateDialog').close();
+$('updateFolder').onclick=guard(async()=>{const folder=await window.desktop.chooseUpdateFolder();if(folder){$('folderInfo').textContent=folder;$('updateInstall').disabled=true;}});
+async function checkUpdates(automatic=false){$('updateCheck').disabled=true;$('updateInstall').disabled=true;$('updateStatus').textContent='Recherche en cours…';try{const result=await window.desktop.checkUpdate($('updateSource').value);$('updateStatus').textContent=result.available?'Version '+result.version+' disponible'+(result.size?' ('+Math.round(result.size/1048576)+' Mio)':'')+'.':result.version===result.current?'Vous utilisez la dernière version disponible.':'Aucune version plus récente trouvée.';$('updateInstall').disabled=!result.available;if(automatic&&result.available&&!$('signatureDialog').open){await refreshUpdateInfo();$('updateDialog').showModal();}}catch(e){$('updateStatus').textContent=e.message;}finally{$('updateCheck').disabled=false;}}
+$('updateCheck').onclick=()=>checkUpdates();window.desktop.onUpdateProgress(message=>$('updateStatus').textContent=message);
+$('updateInstall').onclick=async()=>{if(dirty&&!confirm('Des modifications ne sont pas enregistrées. Fermer pour installer la mise à jour sans les enregistrer ?'))return;const wasDirty=dirty;$('updateInstall').disabled=true;$('updateClose').disabled=true;$('updateCheck').disabled=true;try{dirty=false;await window.desktop.installUpdate();$('updateStatus').textContent='L’installateur est lancé. CremaPDF va se fermer.';}catch(e){dirty=wasDirty;$('updateStatus').textContent=e.message;$('updateInstall').disabled=false;}finally{$('updateClose').disabled=false;$('updateCheck').disabled=false;}};
+if($('autoUpdate').checked)checkUpdates(true);

@@ -5,6 +5,7 @@ const {
   dialog,
   safeStorage,
   shell,
+  net,
 } = require("electron");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -44,6 +45,18 @@ app.whenReady().then(() => {
   });
   win.removeMenu();
   win.loadFile("index.html");
+  require('./updates.cjs').register({app,ipcMain,dialog,net,shell,win});
+  let printBusy=false;
+  ipcMain.handle('print-pdf',async(e,images)=>{
+    if(e.sender!==win.webContents||printBusy)throw Error('Une impression est déjà en cours.');
+    if(!Array.isArray(images)||!images.length||images.some(i=>typeof i!=='string'||!i.startsWith('data:image/png;base64,')))throw Error('Pages à imprimer non valides.');
+    printBusy=true;let printWindow;
+    try{printWindow=new BrowserWindow({show:false,parent:win,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});
+      await printWindow.loadFile(path.join(__dirname,'print.html'));
+      await printWindow.webContents.executeJavaScript(`window.preparePrint(${JSON.stringify(images)})`);
+      return await new Promise((resolve,reject)=>{try{printWindow.webContents.print({silent:false,printBackground:true,pageSize:'A4',margins:{marginType:'none'}},(success,reason)=>resolve({success,reason}));}catch(error){reject(error);}});
+    }finally{printWindow?.destroy();printBusy=false;}
+  });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (e) => e.preventDefault());
   const readPdf = async (p) => ({

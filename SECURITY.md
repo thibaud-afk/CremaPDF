@@ -6,4 +6,8 @@ privé de vulnérabilité GitHub s'il est disponible sur ce dépôt. Sinon, ouvr
 une issue demandant un canal de contact privé, sans publier les détails techniques.
 
 Cette première version n'a pas fait l'objet d'un audit indépendant. Les mises à
-jour sont distribuées dans les Releases ; il n'y a pas de mise à jour automatique.
+jour sont distribuées dans les Releases et depuis le bouton Mises à jour.
+Les téléchargements GitHub sont contrôlés avec l'empreinte SHA-256 annoncée par GitHub.
+Un dossier de mises à jour choisi par l'utilisateur doit contenir des installateurs
+de confiance. Leur empreinte est revérifiée avant lancement pour détecter un changement
+depuis la recherche.

@@ -1,8 +1,8 @@
-CremaPDF 1.1 - Votre atelier PDF personnel
+CremaPDF 1.2 - Votre atelier PDF personnel
 Offert avec plaisir par Thibaud CREMADES
 
 INSTALLATION
-Double-cliquez sur « CremaPDF Setup 1.1.0.exe » puis suivez les étapes.
+Double-cliquez sur « CremaPDF Setup 1.2.0.exe » puis suivez les étapes.
 L'installation ne demande ni Node.js ni Python, ni compte, ni abonnement.
 L'application fonctionne hors ligne après installation.
 Le programme ne possède pas de certificat de signature d'éditeur : Windows
@@ -50,3 +50,8 @@ Les documents et signatures ne sont pas envoyés à un serveur.
 Les bibliothèques tierces conservent leurs licences dans l'application.
 
 VERSION 1.1 : après la pose, la signature est sélectionnée. Déplacez-la directement, tirez les poignées des coins pour changer sa taille. Suppr et clic droit permettent de supprimer un ajout. Désinstaller CremaPDF est accessible dans le menu Démarrer et les applications Windows.
+
+VERSION 1.2 : Ctrl+P pour imprimer tout le PDF, la page actuelle ou une plage.
+Les ajouts sont inclus et les pages sont ajustées au format A4.
+Bouton Mises à jour : GitHub ou dossier choisi, téléchargement et installation.
+La vérification au démarrage est optionnelle.

@@ -1,0 +1,1 @@
+window.preparePrint=async images=>{document.body.replaceChildren();for(const data of images){const sheet=document.createElement('section');sheet.className='sheet';const img=new Image();img.src=data;await img.decode();sheet.append(img);document.body.append(sheet);}void document.body.offsetHeight;return document.querySelectorAll('.sheet').length;};

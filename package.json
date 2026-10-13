@@ -1,12 +1,13 @@
 {
   "name": "cremapdf",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Votre atelier PDF personnel, local et gratuit",
   "author": "CREMALAB",
   "main": "main.cjs",
   "scripts": {
     "start": "node prepare-assets.cjs && electron .",
-    "build": "node prepare-assets.cjs && electron-builder --win nsis --x64"
+    "build": "node prepare-assets.cjs && electron-builder --win nsis --x64",
+    "test": "node tests/update.test.cjs"
   },
   "devDependencies": {
     "electron": "^42.0.0",
@@ -31,7 +32,12 @@
       "icon.ico",
       "LICENSE",
       "vendor/**/*",
-      "!**/node_modules{,/**/*}"
+      "!**/node_modules{,/**/*}",
+      "updates.cjs",
+      "print-pages.mjs",
+      "print.html",
+      "print.css",
+      "print.js"
     ],
     "win": {
       "target": "nsis",
