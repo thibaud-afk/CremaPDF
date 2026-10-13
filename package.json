@@ -1,0 +1,63 @@
+{
+  "name": "cremapdf",
+  "version": "1.0.0",
+  "description": "Votre atelier PDF personnel, local et gratuit",
+  "author": "CREMALAB",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win nsis --x64"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.0"
+  },
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "fr.cremalab.cremapdf",
+    "productName": "CremaPDF",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "index.html",
+      "app.js",
+      "style.css",
+      "node_modules/**/*",
+      "icon.png",
+      "icon.ico",
+      "LICENSE"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CremaPDF"
+    },
+    "fileAssociations": [
+      {
+        "ext": "pdf",
+        "name": "Document PDF",
+        "description": "Document PDF",
+        "role": "Editor"
+      }
+    ]
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thibaud-afk/CremaPDF.git"
+  }
+}

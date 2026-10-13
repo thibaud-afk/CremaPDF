@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' blob:"
+    />
+    <title>CremaPDF</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <b>Crema<span>PDF</span></b
+        ><small>Votre atelier PDF personnel</small>
+      </div>
+      <button id="open" class="primary">Ouvrir un PDF</button>
+      <div id="filename">Aucun document ouvert</div>
+      <button id="save" class="dark" disabled>Enregistrer une copie</button>
+    </header>
+    <main>
+      <aside>
+        <div class="label">VOTRE BOÎTE À OUTILS</div>
+        <button data-tool="select" class="active">
+          ↖ Sélectionner / déplacer</button
+        ><button data-tool="signature">✎ Poser ma signature</button
+        ><button data-tool="date">◷ Ajouter la date</button
+        ><button data-tool="text">T Ajouter du texte</button
+        ><button data-tool="check">✓ Cocher une case</button>
+        <hr />
+        <label
+          >Texte à ajouter<textarea
+            id="text"
+            rows="3"
+            placeholder="Saisissez votre texte"
+          >
+Thibaud CREMADES — Directeur général</textarea></label
+        ><label
+          >Taille du texte
+          <input id="font" type="number" value="14" min="8" max="72" /></label
+        ><label
+          >Largeur signature
+          <input
+            id="sigwidth"
+            type="range"
+            min="60"
+            max="320"
+            value="180" /></label
+        ><button id="remove">Supprimer la sélection</button
+        ><button id="undo">↶ Annuler le dernier ajout</button>
+        <hr />
+        <div class="label">MA SIGNATURE</div>
+        <img id="sigpreview" alt="Signature enregistrée" hidden /><button
+          id="configure"
+        >
+          Créer / changer ma signature</button
+        ><button id="forget">Effacer ma signature enregistrée</button>
+        <p class="privacy">
+          100 % local. Vos documents restent sur cet ordinateur.
+        </p>
+      </aside>
+      <section class="workspace">
+        <nav>
+          <button id="prev">←</button><span id="pagecount">—</span
+          ><button id="next">→</button>
+          <div class="spacer"></div>
+          <button id="minus">−</button><span id="zoom">100 %</span
+          ><button id="plus">+</button>
+        </nav>
+        <div id="scroll">
+          <div id="welcome">
+            <div class="symbol">✎</div>
+            <h1>Vos PDF. Votre signature.<br />Tout simplement.</h1>
+            <p>
+              Ouvrez un document, ajoutez ce qu’il faut,<br />puis enregistrez
+              votre copie.
+            </p>
+            <button id="welcomeopen" class="primary">
+              Choisir un document PDF
+            </button>
+            <p class="muted">Sans compte · Sans abonnement · Hors ligne</p>
+          </div>
+          <div id="paper" hidden>
+            <canvas id="pdf"></canvas>
+            <div id="overlay"></div>
+          </div>
+        </div>
+        <footer id="status" role="status">
+          Prêt. Ouvrez un PDF pour commencer.
+        </footer>
+      </section>
+    </main>
+    <dialog id="signatureDialog">
+      <h2>Votre signature, une seule fois.</h2>
+      <p>
+        Dessinez ci-dessous ou importez une image. Vérifiez l’aperçu avant de la
+        conserver.
+      </p>
+      <canvas id="signpad" width="720" height="240"></canvas>
+      <div class="row">
+        <button id="clear">Recommencer</button
+        ><label class="filebutton"
+          >Importer une image<input
+            id="import"
+            type="file"
+            accept="image/png,image/jpeg"
+        /></label>
+      </div>
+      <p class="muted">
+        Signature manuscrite enregistrée sur ce PC, protégée par Windows.
+      </p>
+      <div class="row">
+        <button id="cancel">Annuler</button
+        ><button id="confirm" class="primary">
+          Valider et conserver ma signature
+        </button>
+      </div>
+    </dialog>
+    <script src="node_modules/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

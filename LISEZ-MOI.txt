@@ -1,0 +1,50 @@
+CremaPDF 1.0 - Votre atelier PDF personnel
+Offert avec plaisir par Thibaud CREMADES
+
+INSTALLATION
+Double-cliquez sur « CremaPDF Setup 1.0.0.exe » puis suivez les étapes.
+L'installation ne demande ni Node.js ni Python, ni compte, ni abonnement.
+L'application fonctionne hors ligne après installation.
+Le programme ne possède pas de certificat de signature d'éditeur : Windows
+peut afficher une demande de confirmation à son lancement.
+
+PREMIER DEMARRAGE
+Indiquez le prénom souhaité. Dessinez votre signature ou importez une image
+PNG/JPEG. Les fonds blancs des images sont rendus transparents.
+Vérifiez le résultat, puis validez. L'application contrôle que l'image n'est
+pas vide ; elle n'effectue pas de vérification d'identité.
+Cochez « Ne plus afficher cet accueil » pour aller directement à l'import.
+Accueil et réglages restent accessibles dans la barre latérale.
+
+UTILISATION
+Importer : ouvrir un PDF. Ctrl+O.
+Signer : choisir l'outil signature puis cliquer sur la page.
+Déplacer : choisir Sélectionner / déplacer et faire glisser un ajout.
+Date / Texte / Case : choisir l'outil puis cliquer sur la page.
+Surlignage : sélectionner les mots ou dessiner une zone ; quatre couleurs.
+Recherche : Ctrl+F, puis Entrée ; flèches pour parcourir les résultats.
+Zoom : boutons + et -. Déplacer la vue : cliquer et faire glisser.
+Enregistrer une copie : Ctrl+S. Le fichier d'origine reste disponible.
+Les ajouts sont incorporés au PDF exporté ; les rouvrir ne permet pas
+de sélectionner séparément les anciens ajouts pour les déplacer.
+
+LECTEUR PAR DEFAUT
+Installez d'abord CremaPDF. Cliquez sur « Lecteur PDF par défaut », puis
+recherchez .pdf dans les paramètres Windows et choisissez CremaPDF.
+Windows demande la validation de ce choix par l'utilisateur.
+Les double-clics sur les PDF ouvrent ensuite le document dans CremaPDF.
+
+LIMITES DE CETTE PREMIERE VERSION
+Ajout de texte, signature et surlignage : les paragraphes d'origine ne
+sont pas réécrits. Les champs de formulaire n'ont pas d'éditeur dédié.
+Sur les scans, le surlignage par zone fonctionne ; la recherche de mots
+et la sélection de texte nécessitent un PDF possédant du texte (pas d'OCR).
+Les PDF protégés doivent être déverrouillés avec un outil adapté.
+La signature est une image manuscrite, sans certificat électronique.
+
+PARTAGE ET CONFIDENTIALITE
+Partagez uniquement l'installateur et ce guide. Chaque utilisateur configure
+sa signature et son prénom. Aucune signature personnelle n'est dans l'installateur.
+La signature enregistrée est chiffrée avec le stockage sécurisé Windows.
+Les documents et signatures ne sont pas envoyés à un serveur.
+Les bibliothèques tierces conservent leurs licences dans l'application.

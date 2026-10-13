@@ -1,0 +1,14 @@
+node_modules/
+.pnpm-store/
+release/
+test-profile/
+test-export.pdf
+apercu.png
+!docs/apercu.png
+export-verifie.png
+check.cjs
+demo.cjs
+demo.pdf
+capture.cjs
+publication-notes.md
+*.log

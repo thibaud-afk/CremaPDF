@@ -1,0 +1,8 @@
+packages: []
+allowBuilds:
+  electron-winstaller: set this to true or false
+onlyBuiltDependencies:
+  - electron
+  - app-builder-bin
+ignoredBuiltDependencies:
+  - electron-winstaller
