@@ -12,7 +12,7 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 ## Installation
 
-1. Téléchargez `CremaPDF Setup 1.2.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
+1. Téléchargez `CremaPDF Setup 1.3.0.exe` dans les [Releases](https://github.com/thibaud-afk/CremaPDF/releases).
 2. Lancez l'installateur. Aucun outil de développement n'est nécessaire.
 3. Choisissez votre prénom, dessinez votre signature ou importez une image PNG/JPEG.
 4. Vérifiez l'aperçu et validez. Vous pouvez cocher **Ne plus afficher cet accueil**.
@@ -20,6 +20,16 @@ Sans compte, sans abonnement et sans envoi de vos documents à un serveur.
 
 Windows 10/11, processeur x64. L'installateur n'est pas signé avec un certificat
 d'éditeur ; Windows peut afficher un avertissement de réputation.
+
+## Nouveautés de la version 1.3
+
+**Aperçu avant impression :** Ctrl+P ouvre une vue du résultat avec les signatures, dates et textes ajoutés. Parcourez les pages de la sélection et choisissez immédiatement l'imprimante, les exemplaires et les pages à imprimer. Le bouton **Imprimer** envoie ensuite le document à l'imprimante choisie. **Options Windows…** reste disponible pour les réglages avancés du pilote.
+
+**Recto verso :** bord long pour une lecture comme un livre, bord court pour un bloc-notes. Les choix sont activés selon les capacités annoncées par le pilote Windows. Si cette détection est indisponible, les modes restent proposés avec une indication et la possibilité d'ouvrir les options Windows. Le pilote doit prendre en charge le recto verso automatique ; cette version ne propose pas de retournement manuel des feuilles.
+
+**Placement au clavier :** dès la pose d'un texte, d'une date ou d'une signature, utilisez les flèches pour un déplacement fin (1 point PDF), ou **Maj + flèches** pour un déplacement de 10 points. Les éléments restent dans la page. Les flèches conservent leur fonction habituelle dans les champs de saisie et les fenêtres de dialogue.
+
+Tests : `pnpm test`. Pour le scénario d'interface sans impression papier, installez Playwright en développement puis lancez `node tests/print-ui.cjs` ; `CREMAPDF_PLAYWRIGHT` peut désigner une installation existante et `CREMAPDF_TEST_EXE` l'exécutable emballé à vérifier.
 
 ## Nouveautés de la version 1.2
 

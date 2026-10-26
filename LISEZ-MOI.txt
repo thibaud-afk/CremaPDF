@@ -1,8 +1,8 @@
-CremaPDF 1.2 - Votre atelier PDF personnel
+CremaPDF 1.3 - Votre atelier PDF personnel
 Offert avec plaisir par Thibaud CREMADES
 
 INSTALLATION
-Double-cliquez sur « CremaPDF Setup 1.2.0.exe » puis suivez les étapes.
+Double-cliquez sur « CremaPDF Setup 1.3.0.exe » puis suivez les étapes.
 L'installation ne demande ni Node.js ni Python, ni compte, ni abonnement.
 L'application fonctionne hors ligne après installation.
 Le programme ne possède pas de certificat de signature d'éditeur : Windows
@@ -55,3 +55,10 @@ VERSION 1.2 : Ctrl+P pour imprimer tout le PDF, la page actuelle ou une plage.
 Les ajouts sont inclus et les pages sont ajustées au format A4.
 Bouton Mises à jour : GitHub ou dossier choisi, téléchargement et installation.
 La vérification au démarrage est optionnelle.
+VERSION 1.3
+Ctrl+P ouvre un aperçu avec navigation dans les pages choisies.
+Sélectionnez directement l'imprimante, les exemplaires et le recto verso.
+Bord long : comme un livre. Bord court : comme un bloc-notes.
+Les modes disponibles dépendent du pilote Windows. Options Windows reste accessible.
+Après la pose ou la sélection, les flèches déplacent le texte, la date ou la signature.
+Maj + flèches permet un déplacement plus rapide. Les champs de saisie restent utilisables normalement.

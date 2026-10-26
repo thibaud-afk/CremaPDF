@@ -47,14 +47,18 @@ app.whenReady().then(() => {
   win.loadFile("index.html");
   require('./updates.cjs').register({app,ipcMain,dialog,net,shell,win});
   let printBusy=false;
-  ipcMain.handle('print-pdf',async(e,images)=>{
+  const printerService=require('./printers.cjs');
+  ipcMain.handle('printers',async e=>{if(e.sender!==win.webContents)throw Error('Accès refusé.');return (await win.webContents.getPrintersAsync()).map(({name,displayName,isDefault})=>({name,displayName,isDefault}));});
+  ipcMain.handle('printer-capabilities',async(e,name)=>{if(e.sender!==win.webContents||!(await win.webContents.getPrintersAsync()).some(p=>p.name===name))throw Error('Imprimante inconnue.');return printerService.capabilities(name);});
+  ipcMain.handle('print-pdf',async(e,{images,settings})=>{
     if(e.sender!==win.webContents||printBusy)throw Error('Une impression est déjà en cours.');
     if(!Array.isArray(images)||!images.length||images.some(i=>typeof i!=='string'||!i.startsWith('data:image/png;base64,')))throw Error('Pages à imprimer non valides.');
+    const options=printerService.printSettings(settings,await win.webContents.getPrintersAsync(),await printerService.capabilities(settings?.deviceName));
     printBusy=true;let printWindow;
     try{printWindow=new BrowserWindow({show:false,parent:win,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});
       await printWindow.loadFile(path.join(__dirname,'print.html'));
       await printWindow.webContents.executeJavaScript(`window.preparePrint(${JSON.stringify(images)})`);
-      return await new Promise((resolve,reject)=>{try{printWindow.webContents.print({silent:false,printBackground:true,pageSize:'A4',margins:{marginType:'none'}},(success,reason)=>resolve({success,reason}));}catch(error){reject(error);}});
+      return await new Promise((resolve,reject)=>{try{printWindow.webContents.print(options,(success,reason)=>resolve({success,reason}));}catch(error){reject(error);}});
     }finally{printWindow?.destroy();printBusy=false;}
   });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));

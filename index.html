@@ -121,7 +121,19 @@ Thibaud CREMADES — Directeur général</textarea></label
       </div>
     </dialog>
     <div id="actionHint" hidden role="status"></div>
-    <dialog id="printDialog"><h2>Imprimer le PDF</h2><p id="printCount"></p><label>Pages à imprimer<select id="printChoice"><option value="all">Tout le document</option><option value="current">Page actuelle</option><option value="range">Certaines pages</option></select></label><label id="rangeLabel" hidden>Numéros de pages<input id="printRange" placeholder="Exemple : 1-3, 5, 7-9"></label><p id="printSummary" role="status"></p><p>Les signatures, dates, textes et surlignages seront inclus. Vous choisirez ensuite l’imprimante et le nombre de copies dans la fenêtre Windows. Le document est ajusté au format A4.</p><div class="row"><button id="printCancel">Annuler</button><button id="printConfirm" class="primary">Choisir l’imprimante</button></div></dialog>
+    <dialog id="printDialog">
+      <h2>Aperçu avant impression</h2><p id="printCount"></p>
+      <div class="print-layout"><div class="print-settings">
+      <label>Imprimante<select id="printPrinter"><option value="">Chargement…</option></select></label>
+      <label>Exemplaires<input id="printCopies" type="number" min="1" max="99" value="1"></label>
+      <label>Recto verso<select id="printDuplex"><option value="simplex">Recto uniquement</option><option value="longEdge">Recto verso — retourner sur le bord long</option><option value="shortEdge">Recto verso — retourner sur le bord court</option></select></label>
+      <p id="printDriverNote" class="muted" role="status"></p>
+      <label>Pages à imprimer<select id="printChoice"><option value="all">Tout le document</option><option value="current">Page actuelle</option><option value="range">Certaines pages</option></select></label>
+      <label id="rangeLabel" hidden>Numéros de pages<input id="printRange" type="text" placeholder="Exemple : 1-3, 5, 7-9"></label>
+      <p id="printSummary" role="status"></p><p class="muted">A4 · ajusté à la page. Les signatures, dates, textes et surlignages sont inclus. Bord long : lecture comme un livre ; bord court : lecture comme un bloc-notes.</p>
+      </div><div class="print-preview"><div class="preview-controls"><button id="previewPrev" aria-label="Page précédente de l’aperçu">←</button><span id="printPreviewLabel" role="status"></span><button id="previewNext" aria-label="Page suivante de l’aperçu">→</button></div><canvas id="printPreviewCanvas" aria-label="Aperçu du document imprimé au format A4"></canvas></div></div>
+      <div class="row"><button id="printCancel">Annuler</button><button id="printSystem" disabled>Options Windows…</button><button id="printConfirm" class="primary" disabled>Imprimer</button></div>
+    </dialog>
     <dialog id="updateDialog"><h2>Mises à jour CremaPDF</h2><p id="versionInfo"></p><label>Où chercher ?<select id="updateSource"><option value="github">GitHub — dépôt officiel CremaPDF</option><option value="folder">Un dossier sur cet ordinateur ou un partage réseau</option></select></label><button id="updateFolder" hidden>Choisir le dossier</button><p id="folderInfo"></p><label><input type="checkbox" id="autoUpdate"> Vérifier automatiquement au démarrage</label><p id="updateStatus" role="status">Cliquez sur Rechercher pour vérifier les mises à jour.</p><div class="row"><button id="updateClose">Fermer</button><button id="updateCheck">Rechercher</button><button id="updateInstall" class="primary" disabled>Télécharger et installer</button></div></dialog>
     <div id="itemMenu" hidden role="menu"><button id="menuResize" role="menuitem">Redimensionner avec les poignées</button><button id="menuDuplicate" role="menuitem">Dupliquer</button><button id="menuDelete" role="menuitem">Supprimer · Suppr</button></div>
     <script src="vendor/pdf-lib.min.js"></script>

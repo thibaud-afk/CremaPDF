@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {arrowMove} from '../placement.mjs';
+test('Precise arrows work for signature, text and date independent of zoom',()=>{for(const kind of ['signature','text']){const item={kind,x:30,y:40,w:100,h:40};arrowMove(item,'ArrowRight',false,600,800);assert.equal(item.x,31);arrowMove(item,'ArrowUp',true,600,800);assert.equal(item.y,30);}});
+test('Elements stay inside the PDF and other keys are ignored',()=>{const item={x:0,y:0,w:100,h:40};arrowMove(item,'ArrowLeft',true,600,800);assert.equal(item.x,0);item.x=500;arrowMove(item,'ArrowRight',true,600,800);assert.equal(item.x,500);assert.equal(arrowMove(item,'a',false,600,800),false);});

@@ -1,5 +1,6 @@
 import * as pdfjs from "./vendor/pdfjs/pdf.mjs";
-import {choosePages} from './print-pages.mjs';
+import {initPrint} from './print-ui.mjs';
+import {arrowMove} from './placement.mjs';
 pdfjs.GlobalWorkerOptions.workerSrc =
   "./vendor/pdfjs/pdf.worker.mjs";
 const $ = (id) => document.getElementById(id),
@@ -129,7 +130,7 @@ function setTool(t) {
       ? "Sélectionnez les mots avec la souris : le surlignage est ajouté au relâchement."
       : t === "area"
         ? "Dessinez un rectangle à surligner."
-        : t === "signature" ? "Indiquez maintenant l’endroit où poser la signature : cliquez dans le PDF." : "Déplacez les éléments à la souris. Poignées bleues : redimensionner. Suppr : supprimer.",
+        : t === "signature" ? "Indiquez maintenant l’endroit où poser la signature : cliquez dans le PDF." : "Déplacez à la souris ou avec les flèches. Maj + flèches : déplacement rapide. Suppr : supprimer.",
   );
 }
 document.querySelectorAll("[data-tool]").forEach(
@@ -228,7 +229,8 @@ function add(item) {
   selected = items.at(-1).id;
   if (["signature", "text"].includes(item.kind)) setTool("select");
   draw();
-  if (item.kind === "signature") status("Signature posée : faites-la glisser pour la déplacer, tirez un coin pour la dimensionner. Suppr ou clic droit pour supprimer.");
+  if (['signature','text'].includes(item.kind)) {document.activeElement?.blur();overlay.tabIndex=0;overlay.focus({preventScroll:true});}
+  if (item.kind === "signature") status("Signature posée : glissez-la ou utilisez les flèches. Maj + flèches : déplacement rapide. Tirez un coin pour changer sa taille.");
 }
 function draw() {
   overlay.replaceChildren();
@@ -259,7 +261,7 @@ function draw() {
       setTool("select");
       e.preventDefault();
       e.stopPropagation();
-      selected = it.id;
+      selected = it.id; overlay.tabIndex=0; overlay.focus({preventScroll:true});
       const x = e.clientX,
         y = e.clientY,
         ox = it.x,
@@ -727,6 +729,7 @@ window.addEventListener("beforeunload", (e) => {
 document.addEventListener("keydown", (e) => {
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){e.preventDefault();if(doc&&!$('signatureDialog').open)$('print').click();}
   const editing = e.target.closest('input,textarea,select,[contenteditable="true"]');
+  if(!editing&&!document.querySelector('dialog[open]')&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&selected){const item=items.find(i=>i.id===selected&&i.page===page);if(item&&arrowMove(item,e.key,e.shiftKey,viewport.width/scale,viewport.height/scale)){e.preventDefault();dirty=true;draw();status('Élément déplacé. Flèches : réglage fin · Maj + flèches : déplacement rapide.');return;}}
   if(e.key==='Escape') { $('itemMenu').hidden=true; setTool('select'); }
   if(e.key==='Delete' && !editing && !$('signatureDialog').open && selected) {e.preventDefault(); $('remove').click();}
   if (e.ctrlKey && e.key === "f") {
@@ -790,15 +793,7 @@ guard(async () => {
   }
 })();
 
-function printSelection(){return choosePages($('printChoice').value,$('printRange').value,doc.numPages,page);}
-function refreshPrint(){ $('rangeLabel').hidden=$('printChoice').value!=='range';try{const pages=printSelection();$('printSummary').textContent=pages.length+' page(s) à imprimer sur '+doc.numPages+' : '+pages.join(', ');$('printConfirm').disabled=false;}catch(e){$('printSummary').textContent=e.message;$('printConfirm').disabled=true;}}
-$('print').onclick=()=>{if(!doc)return;$('printCount').textContent='Ce document contient '+doc.numPages+' page(s). Page actuelle : '+page+'.';refreshPrint();$('printDialog').showModal();};
-$('printChoice').onchange=$('printRange').oninput=refreshPrint;
-$('printCancel').onclick=()=>$('printDialog').close();
-let printing=false;
-$('printConfirm').onclick=guard(async()=>{if(printing)return;const chosen=printSelection();printing=true;$('printDialog').close();$('print').disabled=true;let prepared;
-try{const pdf=await buildPdf();prepared=await pdfjs.getDocument({data:await pdf.save(),isEvalSupported:false}).promise;const images=[];for(let i=0;i<chosen.length;i++){status('Préparation de l’impression : '+(i+1)+' / '+chosen.length+'…');const pdfPage=await prepared.getPage(chosen[i]);const view=pdfPage.getViewport({scale:2.5});const canvas=document.createElement('canvas');canvas.width=Math.ceil(view.width);canvas.height=Math.ceil(view.height);await pdfPage.render({canvasContext:canvas.getContext('2d'),viewport:view}).promise;images.push(canvas.toDataURL('image/png'));canvas.width=canvas.height=0;}const result=await window.desktop.print(images);status(result.success?'Impression transmise à Windows.':result.reason==='cancelled'?'Impression annulée.':'Impression non effectuée : '+(result.reason||'annulée ou imprimante indisponible.'));}
-finally{await prepared?.destroy();printing=false;$('print').disabled=!doc;}});
+initPrint({pdfjs,getDocument:()=>doc,getPage:()=>page,buildPdf,status,guard});
 const updateButton=document.createElement('button');updateButton.id='updates';updateButton.textContent='Mises à jour';document.querySelector('aside').append(updateButton);
 let updateInfo;
 async function refreshUpdateInfo(){updateInfo=await window.desktop.updateInfo();$('versionInfo').textContent='Version installée : '+updateInfo.version;$('folderInfo').textContent=updateInfo.folder||'Aucun dossier sélectionné.';}
