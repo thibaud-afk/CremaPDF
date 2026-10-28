@@ -116,3 +116,5 @@ reproduisant le problème. Pour une faille de sécurité, consultez [SECURITY.md
 Licence [MIT](LICENSE). Vous pouvez utiliser, partager et améliorer ce logiciel.
 
 **Offert avec plaisir par Thibaud CREMADES.**
+
+Mise à jour 1.4 : cliquez sur ? puis Mise à jour. La recherche démarre immédiatement. Télécharger et installer vérifie le téléchargement, installe silencieusement la nouvelle version puis relance CremaPDF. Enregistrez votre document avant de continuer. Signature et réglages conservés.

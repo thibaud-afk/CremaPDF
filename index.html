@@ -20,6 +20,8 @@
       <div id="filename">Aucun document ouvert</div>
       <button id="save" class="dark" disabled>Enregistrer une copie</button>
       <button id="print" disabled>Imprimer · Ctrl+P</button>
+      <button id="help" popovertarget="helpMenu" aria-label="Aide">?</button>
+      <div id="helpMenu" popover><button id="updates" popovertarget="helpMenu" popovertargetaction="hide">Mise à jour</button></div>
     </header>
     <main>
       <aside>
@@ -134,7 +136,7 @@ Thibaud CREMADES — Directeur général</textarea></label
       </div><div class="print-preview"><div class="preview-controls"><button id="previewPrev" aria-label="Page précédente de l’aperçu">←</button><span id="printPreviewLabel" role="status"></span><button id="previewNext" aria-label="Page suivante de l’aperçu">→</button></div><canvas id="printPreviewCanvas" aria-label="Aperçu du document imprimé au format A4"></canvas></div></div>
       <div class="row"><button id="printCancel">Annuler</button><button id="printSystem" disabled>Options Windows…</button><button id="printConfirm" class="primary" disabled>Imprimer</button></div>
     </dialog>
-    <dialog id="updateDialog"><h2>Mises à jour CremaPDF</h2><p id="versionInfo"></p><label>Où chercher ?<select id="updateSource"><option value="github">GitHub — dépôt officiel CremaPDF</option><option value="folder">Un dossier sur cet ordinateur ou un partage réseau</option></select></label><button id="updateFolder" hidden>Choisir le dossier</button><p id="folderInfo"></p><label><input type="checkbox" id="autoUpdate"> Vérifier automatiquement au démarrage</label><p id="updateStatus" role="status">Cliquez sur Rechercher pour vérifier les mises à jour.</p><div class="row"><button id="updateClose">Fermer</button><button id="updateCheck">Rechercher</button><button id="updateInstall" class="primary" disabled>Télécharger et installer</button></div></dialog>
+    <dialog id="updateDialog"><h2>Mises à jour CremaPDF</h2><p id="versionInfo"></p><p>La mise à jour est téléchargée et vérifiée, puis installée automatiquement. CremaPDF redémarre ensuite. Votre signature et vos réglages sont conservés.</p><label>Où chercher ?<select id="updateSource"><option value="github">GitHub — dépôt officiel CremaPDF</option><option value="folder">Un dossier sur cet ordinateur ou un partage réseau</option></select></label><button id="updateFolder" hidden>Choisir le dossier</button><p id="folderInfo"></p><label><input type="checkbox" id="autoUpdate"> Vérifier automatiquement au démarrage</label><p id="updateStatus" role="status">Cliquez sur Rechercher pour vérifier les mises à jour.</p><div class="row"><button id="updateClose">Fermer</button><button id="updateCheck">Rechercher</button><button id="updateInstall" class="primary" disabled>Télécharger et installer</button></div></dialog>
     <div id="itemMenu" hidden role="menu"><button id="menuResize" role="menuitem">Redimensionner avec les poignées</button><button id="menuDuplicate" role="menuitem">Dupliquer</button><button id="menuDelete" role="menuitem">Supprimer · Suppr</button></div>
     <script src="vendor/pdf-lib.min.js"></script>
     <script type="module" src="app.js"></script>

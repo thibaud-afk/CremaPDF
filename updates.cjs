@@ -1,6 +1,7 @@
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
 function compare(a,b){const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0);}return 0;}
-function register({app,ipcMain,dialog,net,shell,win}){
+function launchInstaller(file){return new Promise((resolve,reject)=>{const child=require('node:child_process').spawn(file,['/S','--force-run'],{detached:true,stdio:'ignore',windowsHide:true});child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});});}
+function register({app,ipcMain,dialog,net,win,launch=launchInstaller}){
  let folder='',candidate=null,busy=false;const prefs=path.join(app.getPath('userData'),'updates.json');
  const ready=fs.readFile(prefs,'utf8').then(s=>{folder=JSON.parse(s).folder||'';}).catch(()=>{});
  ipcMain.handle('update-info',async()=>{await ready;return {version:app.getVersion(),folder};});
@@ -15,7 +16,7 @@ function register({app,ipcMain,dialog,net,shell,win}){
  ipcMain.handle('update-install',async()=>{if(!candidate||busy)throw Error('Recherchez une mise à jour avant de l’installer.');busy=true;try{const chosen=candidate;let file=chosen.file;
   if(!file){win.webContents.send('update-progress','Téléchargement de la version '+chosen.version+'…');const response=await net.fetch(chosen.url,{signal:AbortSignal.timeout(300000)});if(!response.ok)throw Error('Échec du téléchargement.');const total=Number(response.headers.get('content-length')||chosen.size||0);if(total>350*1024*1024)throw Error('Installateur trop volumineux.');const chunks=[];let length=0;const reader=response.body.getReader();for(;;){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>350*1024*1024){await reader.cancel();throw Error('Installateur trop volumineux.');}chunks.push(Buffer.from(value));win.webContents.send('update-progress','Téléchargement : '+(total?Math.min(100,Math.round(length/total*100))+' %':Math.round(length/1048576)+' Mo'));}const data=Buffer.concat(chunks);if(crypto.createHash('sha256').update(data).digest('hex')!==chosen.hash)throw Error('Le contrôle du téléchargement a échoué.');const directory=await fs.mkdtemp(path.join(app.getPath('temp'),'cremapdf-update-'));file=path.join(directory,'CremaPDF Setup '+chosen.version+'.exe');await fs.writeFile(file,data);}
   else if(crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex')!==chosen.hash)throw Error('L’installateur a changé depuis la vérification. Relancez la recherche.');
-  const error=await shell.openPath(file);if(error)throw Error(error);setTimeout(()=>app.quit(),800);return true;
+  await launch(file);setTimeout(()=>app.quit(),800);return true;
  }finally{busy=false;}});
 }
-module.exports={register,compare};
+module.exports={register,compare,launchInstaller};

@@ -62,3 +62,4 @@ Bord long : comme un livre. Bord court : comme un bloc-notes.
 Les modes disponibles dépendent du pilote Windows. Options Windows reste accessible.
 Après la pose ou la sélection, les flèches déplacent le texte, la date ou la signature.
 Maj + flèches permet un déplacement plus rapide. Les champs de saisie restent utilisables normalement.
+Mise à jour 1.4 : cliquez sur ? puis Mise à jour. La recherche démarre immédiatement. Télécharger et installer vérifie le téléchargement, installe silencieusement la nouvelle version puis relance CremaPDF. Enregistrez votre document avant de continuer. Signature et réglages conservés.
